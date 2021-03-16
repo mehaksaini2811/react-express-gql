@@ -1,7 +1,9 @@
-const {ApolloServer,gql}=require('apollo-server')
+const express = require("express");
+const cors = require("cors");
 const mongoose = require("mongoose");
-const User=require("./models/user")
+const { ApolloServer, gql } = require("apollo-server-express");
 const config = require("./config/keys");
+const User=require("./models/user")
 
 const typeDefs = gql`
   type Query {
@@ -54,8 +56,13 @@ const resolvers = {
     }
   
 };
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+});
 
-const server=new ApolloServer({typeDefs,resolvers})
+const app = express();
+server.applyMiddleware({ app });
 
 const PORT = process.env.PORT || 5000;
 
@@ -68,7 +75,7 @@ mongoose
     }
   )
   .then(() => {
-    server.listen(PORT, () => {
+    app.listen(PORT, () => {
       console.log(`Server is running on ${PORT}`);
     });
   })
